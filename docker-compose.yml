@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    restart: always
+    command: npm start
+    volumes:
+      - .:/usr/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "3000:3000"
+    depends_on:
+      - influxdb
+      - telegraf
+
+  influxdb:
+    image: influxdb:alpine
+    restart: always
+    command: "/usr/bin/influxd -config /etc/influxdb/influxdb.conf"
+    volumes: 
+      - ./config/influxdb.conf:/etc/influxdb/influxdb.conf
+    expose:
+      - "8086"
+    ports:
+      - "8086:8086"
+  
+  telegraf:
+    image: telegraf:alpine
+    restart: always
+    command: "/usr/bin/telegraf -config /etc/telegraf/telegraf.conf"
+    expose:
+      - "8125/udp"
+    volumes:
+      - ./config/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - influxdb
