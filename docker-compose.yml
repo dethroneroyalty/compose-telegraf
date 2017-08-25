@@ -13,6 +13,16 @@ services:
     depends_on:
       - influxdb
       - telegraf
+#   deploy:
+#     replicas: 5
+#     restart_policy:
+#       condition: on-failure
+#     resources:
+#       limits:
+#         cpus: "0.1"
+#         memory: 50M
+#   network:
+#     - webnet
 
   influxdb:
     image: influxdb:alpine
@@ -24,6 +34,8 @@ services:
       - "8086"
     ports:
       - "8086:8086"
+#   networks:
+#     - webnet
   
   telegraf:
     image: telegraf:alpine
@@ -36,3 +48,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - influxdb
+#   networks:
+#     - webnet
+      
+#networks:
+#  webnet:
